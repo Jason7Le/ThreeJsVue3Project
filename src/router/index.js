@@ -26,7 +26,19 @@ const router = createRouter({
       path: '/ThreeJS',
       name: 'ThreeJS',
       component: () => import('../views/ThreeJSDemo.vue')
-    }
+    },
+    {
+      path: '/save3DFileToPicture',
+      name: 'save3DFileToPicture',
+      component: () => import('../views/save3DFileToPicture.vue')
+    },
+    {
+      path: '/load3DmodelFile',
+      name: 'load3DmodelFile',
+      component: () => import('../views/load3DmodelFile.vue')
+    },
+    
+    
   ]
 })
 
