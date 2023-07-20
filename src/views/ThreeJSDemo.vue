@@ -4,6 +4,8 @@ import { onMounted } from 'vue'
 import * as THREE from 'three';
 // 引入轨道控制器扩展库OrbitControls.js
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import {addBottomGrid} from '../utils.js'
+
 import Stats from 'three/addons/libs/stats.module.js'
 // 三维场景Scene
 // 创建3D场景对象Scene
@@ -153,6 +155,10 @@ for (let i = 0; i < num; i++) {
     scene.add(mesh)
 }
 
+// 增加底部网格
+let BottomGrid = addBottomGrid(THREE)
+scene.add(BottomGrid.plane)
+scene.add(BottomGrid.helper)
 
 // 渲染函数
 const clock = new THREE.Clock();
