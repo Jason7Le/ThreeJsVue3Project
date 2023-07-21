@@ -125,7 +125,7 @@ onMounted(() => {
 })
 onBeforeMount(() => {
     render()
-})
+})l
 
 
 </script>
