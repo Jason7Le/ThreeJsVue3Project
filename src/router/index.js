@@ -37,6 +37,12 @@ const router = createRouter({
       name: 'load3DmodelFile',
       component: () => import('../views/load3DmodelFile.vue')
     },
+    {
+      path: '/LabelInformation',
+      name: 'LabelInformation',
+      component: () => import('../views/LabelInformation.vue')
+    },
+    
     
     
   ]

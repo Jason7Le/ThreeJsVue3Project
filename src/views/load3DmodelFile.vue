@@ -5,12 +5,6 @@ import * as THREE from 'three';
 import { FBXLoader } from 'three/addons/loaders/FBXLoader.js';
 // 引入轨道控制器扩展库OrbitControls.js
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-// 引入CSS2渲染器CSS2DRenderer
-import { CSS2DRenderer } from 'three/addons/renderers/CSS2DRenderer.js';
-// 引入CSS2模型对象CSS2DObject
-import { CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
-
-import { TransformControls } from 'three/examples/jsm/controls/TransformControls.js';
 import {addBottomGrid} from '../utils.js'
 import { onMounted, onUpdated, onBeforeUpdate, onBeforeMount } from 'vue';
 // 初始化3d画布以及场景
@@ -26,15 +20,6 @@ camera.position.set(-0.685, 3.977, 38.784)
 // 相机观察目标指向Threejs 3D空间中某个位置
 camera.lookAt(0, 0, 0) // 坐标原点
 camera.lookAt(0, 0, 0)//y 轴上位置10
-
-
-
-// 辅助观察坐标系
-// const axesHelper = new THREE.AxesHelper(50)
-// scene.add(axesHelper)
-
-
-
 
 
 // 设置环境光（十六进制颜色）
@@ -110,30 +95,17 @@ function render() {
 }
 
 render()
-// let container = document.getElementById('threeD')
-// 初始化标签
-// const tagDiv = document.getElementById('tag')
-let labelRenderer = new CSS2DRenderer()
-labelRenderer.setSize(100, 100)
-labelRenderer.domElement.style.position = "absolute";
-labelRenderer.domElement.style.top = 0;
-labelRenderer.domElement.style.pointerEvents = 'none';
-labelRenderer.domElement.className = "allLabel"
 onMounted(() => {
     document.getElementById('threeD').appendChild(renderer.domElement)
-    document.getElementById('threeD').appendChild(labelRenderer.domElement)
 })
 onBeforeMount(() => {
     render()
-})l
+})
 
 
 </script>
 <template>
     <div id="threeD">
-        <!-- <div id="tag" class="allLabel">
-            这是一个标签
-        </div> -->
         <div id="infO"></div>
     </div>
 </template>

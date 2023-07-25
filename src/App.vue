@@ -17,6 +17,7 @@ import HelloWorld from './components/HelloWorld.vue'
         <RouterLink to="/ThreeJS">ThreeJS Demo</RouterLink>
         <RouterLink to="/save3DFileToPicture">save3DFileToPicture</RouterLink>
         <RouterLink to="/load3DmodelFile">load3DmodelFile</RouterLink>
+        <RouterLink to="/LabelInformation">LabelInformation</RouterLink>
         
       </nav>
     </div>
