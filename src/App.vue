@@ -15,9 +15,10 @@ import HelloWorld from './components/HelloWorld.vue'
         <RouterLink to="/about">About</RouterLink>
         <RouterLink to="/demoGather">Demo集合</RouterLink>
         <RouterLink to="/ThreeJS">ThreeJS Demo</RouterLink>
-        <RouterLink to="/save3DFileToPicture">save3DFileToPicture</RouterLink>
-        <RouterLink to="/load3DmodelFile">load3DmodelFile</RouterLink>
+        <RouterLink to="/save3DFileToPicture">保存模型为图片</RouterLink>
+        <RouterLink to="/load3DmodelFile">加载3D模型文件</RouterLink>
         <RouterLink to="/LabelInformation">LabelInformation</RouterLink>
+        <RouterLink to="/Raycaster">Raycaster(射线拾取模型)</RouterLink>
         
       </nav>
     </div>

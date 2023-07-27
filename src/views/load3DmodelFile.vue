@@ -19,7 +19,7 @@ const camera = new THREE.PerspectiveCamera(12000, width / height, 1, 10000)
 camera.position.set(-0.685, 3.977, 38.784)
 // 相机观察目标指向Threejs 3D空间中某个位置
 camera.lookAt(0, 0, 0) // 坐标原点
-camera.lookAt(0, 0, 0)//y 轴上位置10
+// camera.lookAt(0, 10, 0)//y 轴上位置10
 
 
 // 设置环境光（十六进制颜色）

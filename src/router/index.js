@@ -42,6 +42,12 @@ const router = createRouter({
       name: 'LabelInformation',
       component: () => import('../views/LabelInformation.vue')
     },
+    {
+      path: '/Raycaster',
+      name: 'Raycaster',
+      component: () => import('../views/Raycaster.vue')
+    },
+    
     
     
     
