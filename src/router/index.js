@@ -47,6 +47,17 @@ const router = createRouter({
       name: 'Raycaster',
       component: () => import('../views/Raycaster.vue')
     },
+    {
+      path: '/MouseEvent',
+      name: 'MouseEvent',
+      component: () => import('../views/MouseEvent.vue')
+    },
+    {
+      path: '/ThreeJS',
+      name: 'ThreeJS',
+      component: () => import('../views/ThreeJS.vue')
+    },
+    
     
     
     
