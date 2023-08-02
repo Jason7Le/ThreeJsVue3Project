@@ -5,10 +5,16 @@ import * as THREE from 'three';
 import { FBXLoader } from 'three/addons/loaders/FBXLoader.js';
 // 引入轨道控制器扩展库OrbitControls.js
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
+import {CSS3DObject} from 'three/addons/renderers/CSS3DRenderer.js';
+
 import { addBottomGrid } from '../utils.js'
 import { onMounted, onUpdated, onBeforeUpdate, onBeforeMount, getCurrentInstance, ref } from 'vue';
 let threeDdom = ref(null)
-let scene, camera, renderer
+let selectObject = ref({
+    name: null
+})
+let scene, camera, renderer, arrowMesh
 const pageInstance = getCurrentInstance()
 let towermesh
 // 创建场景
@@ -87,7 +93,8 @@ const createControls = function () {
     // 如果OrbitControls改变了相机参数，重新调用渲染器渲染三维场景
     controls.addEventListener('change', function () {
         renderer.render(scene, camera)//执行渲染操作
-        // console.log('camera', camera.position)
+        // console.log('camera-scene', scene.position)
+        arrowMesh.position.set(scene.position)
     })
 }
 
@@ -117,19 +124,59 @@ function addRaycaster() {
     const intersects = raycaster.intersectObjects([towermesh])
     console.log("射线器返回的对象", intersects)
 }
+function createArrow() {
+    // 创建长方形面
+    const planeGeometry = new THREE.PlaneGeometry(15, 30)
+    // 贴图
+    const grassland = new THREE.TextureLoader().load('/public/image/arrow.png')
+    const arrowMaterial = new THREE.MeshLambertMaterial({
+        map: grassland,
+        transparent: true
+    })
+    arrowMesh = new THREE.Mesh(planeGeometry, arrowMaterial)
+    arrowMesh.position.set(30, -50, 0)
+    arrowMesh
+    // arrowMesh.rotateZ(-1)
+    console.log('增加箭头', arrowMesh)
+    scene.add(arrowMesh)
+}
 // 辅助观察坐标系
 function addAxesHelper() {
     const axesHelper = new THREE.AxesHelper(50)
     scene.add(axesHelper)
 }
+// 处理加载的数据整理数据
+function processingTowerData(objs) {
+    let towerEnumerationData = []
+    if (objs) {
+        for (const item of objs) {
+            item.object instanceof THREE.Mesh
+            if (item instanceof THREE.Mesh && item.name !== "") {
+                // {name: {position: item.position}}
+                console.log(item.position.x)
+                let data = {
+                    name: item.name,
+                    position: item.position
+                }
+                console.log(data)
+                const tag = createTag(data)
+                scene.add(tag)
+                towerEnumerationData.push(data)
+            }
+        }
+        console.log(towerEnumerationData)
+    }
+}
 // 加载三维模型文件
 const loadFbx = function () {
     // 加载三维模型文件
     const loader = new FBXLoader()
-    loader.load('/static/PoleTowerModel/tower2.fbx', function (obj) {
+    loader.load('/static/PoleTowerModel/strainTower.fbx', function (obj) {
         console.log('控制台查看加载obj文件返回的对象结构', obj);
-        console.log('obj对象场景属性', obj.scene);
-        obj.name = 'test-tower2'
+        console.log('obj对象场景属性children', obj.children);
+        // 处理加载的数据整理数据
+        processingTowerData(obj.children)
+        // obj.name = 'test-tower2'
         obj.scale.set(.043, .043, .043)
         obj.position.set(0, -50, 0)
         towermesh = obj
@@ -146,10 +193,14 @@ const loadFbx = function () {
         }
     )
     loader.load('/static/PoleTowerModel/monitoringHost.fbx', (obj) => {
-        console.log('监控主机', obj);
+        let infoDiv = document.getElementById('tag')
+        const div = new CSS2DObject(infoDiv)
+        // const objS = obj.scene.getObjectByName('设备B标注');
         obj.name = '监控主机'
-        obj.scale.set(.03, .03, .03)
-        obj.position.set(0, 10, 0)
+        obj.scale.set(.023, .023, .023)
+        obj.position.set(0, 5, 0)
+        obj.add(div)
+        console.log('监控主机', obj);
         scene.add(obj)
     })
 }
@@ -175,30 +226,86 @@ const getIntersects = (event) => {
     //返回选中的对象
     return intersects
 }
+// 利用名字匹配定位
+const obtainLocationByName = (name, towerType) => {
+    const towerEnumerationData = {
+
+    }
+    return towerEnumerationData[towerType][name]
+}
 // 点击鼠标
 const onMouseClick = (event) => {
     // 获取 raycaster 和所有模型相交的数组，其中的元素按照距离排序，越近的越靠前
     const intersects = getIntersects(event)
     // console.log('点击鼠标intersects:', intersects)
-    if(intersects.length !==0){
-        for(let item of intersects){
-            if(item.object instanceof THREE.Mesh){
-                if( item.object.parent.name=== 'test-tower2'){
-                    console.log('你點中了: ', item.object.parent.name, item)
-                }
-                if(item.object.parent.name=== '监控主机'){
-                    console.log('你點中了: ', item.object.parent.name, item)
-                }
+    if (intersects.length !== 0) {
+        for (let item of intersects) {
+            if (item.object instanceof THREE.Mesh) {
+                console.log('你點中了: ', item.object.parent.name, item)
+
             }
         }
     }
     // 获取选中最近的 Mesh 对象
-    if(intersects.length !==0 && intersects[0].object instanceof THREE.Mesh){
-        let selectObject = intersects[0].object
+    if (intersects.length !== 0 && intersects[0].object instanceof THREE.Mesh && intersects[0].object.parent.name) {
+        selectObject = intersects[0].object
         console.log('选中 Mesh:', selectObject)
-    }else {
+        // 设置标签
+        addlabel(selectObject)
+        // createTag(selectObject)
+    } else {
         // alert("未选中Mesh!");
     }
+}
+
+// 创建数据展示弹窗
+
+const addlabel = (selectObject) => {
+    // 步骤1：创建标签元素
+    // const labelElement = document.createElement('div');
+    const labelElement = document.getElementById('tag');
+    // labelElement.textContent = 'Hello, 3D Label';
+    labelElement.style.position = 'absolute';
+    // labelElement.style.backgroundColor = 'rgba(255, 255, 255, 0.8)';
+    labelElement.style.padding = '8px';
+    labelElement.style.color = '#ffffff';
+    labelElement.style.borderRadius = '4px';
+    labelElement.style.fontFamily = 'Arial';
+    labelElement.style.fontSize = '16px';
+
+    // 步骤2：创建Three.js Sprite
+    const labelTexture = new THREE.Texture(labelElement);
+    labelTexture.needsUpdate = true;
+    const labelSpriteMaterial = new THREE.SpriteMaterial({ map: labelTexture });
+    const labelSprite = new THREE.Sprite(labelSpriteMaterial);
+
+    // 步骤3：设置标签大小
+    const labelWidth = 80;
+    const labelHeight = 50;
+    labelSprite.scale.set(labelWidth, labelHeight, 1);
+
+    // 步骤4：设置标签位置
+    const modelPosition = new THREE.Vector3(0, 0, 0); // 模型位置
+    const labelOffset = new THREE.Vector3(0, 0, 0); // 偏移量，将标签放在模型上方
+    // labelSprite.position.copy(modelPosition).add(labelOffset);
+    console.log(selectObject.position)
+    labelSprite.position.copy(selectObject.position).add(labelOffset)
+    // 步骤5：将标签添加到场景
+    scene.add(labelSprite);
+}
+//创建标签元素
+function createTag(obj) {
+
+    const element = document.createElement('div');
+    element.className = 'tag';
+    element.innerHTML = `<p>名称:${obj.name}</p><p>温度：22°</p><p>湿度：29%</p>`;
+    const object = new CSS3DObject(element);
+    object.visible = true;
+    //缩放比例
+    object.scale.set(0.2, 0.2, 0.2);
+    //指定摆放位置
+    object.position.copy(obj.position);
+    return object;
 }
 // 初始化
 const initThree = () => {
@@ -211,6 +318,7 @@ const initThree = () => {
     addBottomGridFn() // 增加底部网格
     AddVirtualModel() // 增加虚拟模型
     addAxesHelper() // 辅助观察坐标系
+    createArrow() // 创建箭头
     render() // 渲染
     addEventListener('click', onMouseClick, false)
 }
@@ -224,8 +332,10 @@ onBeforeMount(() => {
 
 </script>
 <template>
-    <div id="threeDdom">
-        <div id="infO"></div>
+    <div>
+        <div id="threeDdom">
+        </div>
+        <div id="tag">标签啊！</div>
     </div>
 </template>
 <style scoped>
@@ -235,13 +345,10 @@ onBeforeMount(() => {
 }
 
 #tag {
-    width: 100px;
-    height: 100px;
-    background-color: gray;
     position: absolute;
-    top: 0;
-    pointer-events: none;
-    text-align: center;
-    line-height: 100px;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.6);
+    line-height: 1;
+    border-radius: 5px;
 }
 </style>

@@ -1,5 +1,7 @@
 <template>
-    <div id="threeD">
+    <div>
+        <div id="threeD">
+        </div>
         <div id="infoTag">这里是一个标签</div>
     </div>
 </template>
@@ -124,6 +126,10 @@ scene.add(BottomGrid.helper)
 const labelRenderer = new CSS2DRenderer();
 const creatLabel = ()=>{
     // const div = document.getElementById('infoTag')
+    // const 获取容器宽高
+    const container = document.getElementById('threeD')
+    const halfHeight = container.offsetHeight / 2
+    const halfWidth = container.offsetWidth / 2
     // const infoTag = new CSS2DObject(div)
     // // 设置标签位置
     // console.log('设置标签位置', objPosition)
@@ -131,11 +137,12 @@ const creatLabel = ()=>{
     // // 把HTML元素对应的CSS2模型对象添加到其它模型对象或三维场景中。
     // scene.add(infoTag)
     // // 创建一个CSS2渲染器CSS2DRenderer
-    // labelRenderer.setSize(200, 100)
-    // labelRenderer.domElement.style.position = 'absolute'
-    // labelRenderer.domElement.style.top = '0px'
-    // labelRenderer.domElement.style.pointerEvents = 'none'
-    // document.getElementById('threeD').appendChild(labelRenderer.domElement)
+    labelRenderer.setSize(200, 100)
+    labelRenderer.domElement.style.position = 'absolute'
+    labelRenderer.domElement.style.left = halfWidth
+    labelRenderer.domElement.style.top = halfHeight
+    labelRenderer.domElement.style.pointerEvents = 'none'
+    document.getElementById('threeD').appendChild(labelRenderer.domElement)
 
 
 }
@@ -166,10 +173,11 @@ onBeforeMount(() => {
 #threeD{
     position: relative;
 }
-/* #infoTag {
+#infoTag {
     background-color: gray;
     pointer-events: none;
     text-align: center;
     line-height: 100px;
-} */
+    position: absolute;
+}
 </style>
