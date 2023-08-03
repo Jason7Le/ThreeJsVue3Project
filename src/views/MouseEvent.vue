@@ -6,7 +6,7 @@ import { FBXLoader } from 'three/addons/loaders/FBXLoader.js';
 // 引入轨道控制器扩展库OrbitControls.js
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
-import {CSS3DObject} from 'three/addons/renderers/CSS3DRenderer.js';
+import { CSS3DObject, CSS3DRenderer, CSS3DSprite } from 'three/addons/renderers/CSS3DRenderer.js';
 
 import { addBottomGrid } from '../utils.js'
 import { onMounted, onUpdated, onBeforeUpdate, onBeforeMount, getCurrentInstance, ref } from 'vue';
@@ -14,7 +14,7 @@ let threeDdom = ref(null)
 let selectObject = ref({
     name: null
 })
-let scene, camera, renderer, arrowMesh
+// let scene, camera, renderer, arrowMesh, css3DRenderer
 const pageInstance = getCurrentInstance()
 let towermesh
 // 创建场景
@@ -76,10 +76,17 @@ const createRender = function () {
     const width = container?.offsetWidth
     const height = container?.offsetHeight
     // WebGL渲染器WebGLRenderer
-    renderer = new THREE.WebGLRenderer()
+    renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true,logarithmicDepthBuffer: true })
     renderer.setSize(width, height)
     renderer.render(scene, camera)
 
+    // 初始化CSS3Drenderer
+    // let labelElement = document.querySelector('#tag');
+
+    // css3DRenderer = new CSS3DRenderer()
+    // css3DRenderer.setSize(width, height)
+    // css3DRenderer.domElement.style.position = 'absolute'
+    // labelElement.appendChild(css3DRenderer.domElement)
     // 改变背景透明度值
     renderer.setClearAlpha(0.1)
     // 设置渲染器的初始颜色（十六进制颜色, 透明度）
@@ -93,6 +100,8 @@ const createControls = function () {
     // 如果OrbitControls改变了相机参数，重新调用渲染器渲染三维场景
     controls.addEventListener('change', function () {
         renderer.render(scene, camera)//执行渲染操作
+        // css3DRenderer.render(scene, camera)
+
         // console.log('camera-scene', scene.position)
         arrowMesh.position.set(scene.position)
     })
@@ -109,6 +118,7 @@ const addBottomGridFn = function () {
 function render() {
     // mesh.rotateX(0.01)//每次绕X轴旋转0.01弧度
     renderer.render(scene, camera)
+    // css3DRenderer.render(scene, camera)
     requestAnimationFrame(render)
 }
 // 射线拾取模型
@@ -160,6 +170,7 @@ function processingTowerData(objs) {
                 }
                 console.log(data)
                 const tag = createTag(data)
+                console.log("添加tag", scene, tag)
                 scene.add(tag)
                 towerEnumerationData.push(data)
             }
@@ -193,13 +204,13 @@ const loadFbx = function () {
         }
     )
     loader.load('/static/PoleTowerModel/monitoringHost.fbx', (obj) => {
-        let infoDiv = document.getElementById('tag')
-        const div = new CSS2DObject(infoDiv)
+        // let infoDiv = document.getElementById('tag')
+        // const div = new CSS2DObject(infoDiv)
         // const objS = obj.scene.getObjectByName('设备B标注');
         obj.name = '监控主机'
         obj.scale.set(.023, .023, .023)
         obj.position.set(0, 5, 0)
-        obj.add(div)
+        // obj.add(div)
         console.log('监控主机', obj);
         scene.add(obj)
     })
@@ -261,50 +272,32 @@ const onMouseClick = (event) => {
 // 创建数据展示弹窗
 
 const addlabel = (selectObject) => {
-    // 步骤1：创建标签元素
-    // const labelElement = document.createElement('div');
-    const labelElement = document.getElementById('tag');
-    // labelElement.textContent = 'Hello, 3D Label';
-    labelElement.style.position = 'absolute';
-    // labelElement.style.backgroundColor = 'rgba(255, 255, 255, 0.8)';
-    labelElement.style.padding = '8px';
-    labelElement.style.color = '#ffffff';
-    labelElement.style.borderRadius = '4px';
-    labelElement.style.fontFamily = 'Arial';
-    labelElement.style.fontSize = '16px';
+    // 初始化CSS3Drenderer
+    css3DRenderer = new CSS3DRenderer()
+    labelElement.appendChild(css3DRenderer.domElement)
 
-    // 步骤2：创建Three.js Sprite
-    const labelTexture = new THREE.Texture(labelElement);
-    labelTexture.needsUpdate = true;
-    const labelSpriteMaterial = new THREE.SpriteMaterial({ map: labelTexture });
-    const labelSprite = new THREE.Sprite(labelSpriteMaterial);
-
-    // 步骤3：设置标签大小
-    const labelWidth = 80;
-    const labelHeight = 50;
-    labelSprite.scale.set(labelWidth, labelHeight, 1);
-
-    // 步骤4：设置标签位置
-    const modelPosition = new THREE.Vector3(0, 0, 0); // 模型位置
-    const labelOffset = new THREE.Vector3(0, 0, 0); // 偏移量，将标签放在模型上方
-    // labelSprite.position.copy(modelPosition).add(labelOffset);
-    console.log(selectObject.position)
-    labelSprite.position.copy(selectObject.position).add(labelOffset)
-    // 步骤5：将标签添加到场景
-    scene.add(labelSprite);
 }
 //创建标签元素
 function createTag(obj) {
-
     const element = document.createElement('div');
-    element.className = 'tag';
-    element.innerHTML = `<p>名称:${obj.name}</p><p>温度：22°</p><p>湿度：29%</p>`;
-    const object = new CSS3DObject(element);
+    element.style.width = "142px"
+    element.style.height = "128px"
+    element.style.padding = "10px"
+    element.style.background = "#011D32"
+    element.style.color = "#ffffff"
+    element.style.fontSize = "12px"
+    element.style.border = "1px solid #00CCFF"
+    element.style.lineHeight = "18px"
+    element.style.position = 'fixed'
+    element.style.pointerEvents = 'none';
+    element.className = 'tags'
+    element.innerHTML = `<p>名称: ${obj.name}</p>`;
+    const object = new CSS3DSprite(element);
     object.visible = true;
     //缩放比例
-    object.scale.set(0.2, 0.2, 0.2);
+    object.scale.set(.5, .5, .5);
     //指定摆放位置
-    object.position.copy(obj.position);
+    object.position.set(...obj.position);
     return object;
 }
 // 初始化
@@ -335,7 +328,7 @@ onBeforeMount(() => {
     <div>
         <div id="threeDdom">
         </div>
-        <div id="tag">标签啊！</div>
+        <div id="tag"></div>
     </div>
 </template>
 <style scoped>
@@ -344,11 +337,12 @@ onBeforeMount(() => {
     height: 800px;
 }
 
-#tag {
+/* #tag {
     position: absolute;
+    top: 0;
     padding: 10px;
     background: rgba(255, 255, 255, 0.6);
     line-height: 1;
     border-radius: 5px;
-}
+} */
 </style>
