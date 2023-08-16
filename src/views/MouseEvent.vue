@@ -14,7 +14,7 @@ let threeDdom = ref(null)
 let selectObject = ref({
     name: null
 })
-// let scene, camera, renderer, arrowMesh, css3DRenderer
+let scene, camera, renderer, arrowMesh, css3DRenderer
 const pageInstance = getCurrentInstance()
 let towermesh
 // 创建场景
@@ -102,7 +102,7 @@ const createControls = function () {
         renderer.render(scene, camera)//执行渲染操作
         // css3DRenderer.render(scene, camera)
 
-        // console.log('camera-scene', scene.position)
+        console.log('camera-scene', camera.position)
         arrowMesh.position.set(scene.position)
     })
 }
@@ -207,19 +207,26 @@ const loadFbx = function () {
         // let infoDiv = document.getElementById('tag')
         // const div = new CSS2DObject(infoDiv)
         // const objS = obj.scene.getObjectByName('设备B标注');
-        obj.name = '监控主机'
+        obj.name = '测试模型1'
         obj.scale.set(.023, .023, .023)
         obj.position.set(0, 5, 0)
         // obj.add(div)
-        console.log('监控主机', obj);
+        console.log('测试模型1', obj);
+        scene.add(obj)
+    })
+    loader.load('/static/PoleTowerModel/inclinometer.fbx', (obj) => {
+        console.log('测试模型2', obj)
+        obj.name = '测试模型2'
+        obj.scale.set(.023, .023, .023)
+        obj.position.set(0, 15, 0)
+        // obj.add(div)
+        console.log('测试模型2', obj);
         scene.add(obj)
     })
 }
 // 获取与射线相交的对象数组
 const getIntersects = (event) => {
     event.preventDefault();
-    // console.log('event.clientX:' + event.clientX)
-    // console.log('event.clientY:' + event.clientY)
     // 声明 raycaster 和 mouse 变量
     let raycaster = new THREE.Raycaster();
     let mouse = new THREE.Vector2();

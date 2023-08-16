@@ -21,6 +21,7 @@ import HelloWorld from './components/HelloWorld.vue'
         <RouterLink to="/Raycaster">Raycaster(射线拾取模型)</RouterLink>
         <RouterLink to="/MouseEvent">MouseEvent(鼠标事件)</RouterLink>
         <RouterLink to="/ThreeJS">ThreeJS(测试)</RouterLink>
+        <RouterLink to="/clickModelShowDlog">clickModelShowDlog(测试)</RouterLink>
         
       </nav>
     </div>

@@ -56,7 +56,12 @@ const router = createRouter({
       path: '/ThreeJS',
       name: 'ThreeJS',
       component: () => import('../views/ThreeJS.vue')
+    },{
+      path: '/clickModelShowDlog',
+      name: 'clickModelShowDlog',
+      component: () => import('../views/clickModelShowDlog.vue')
     },
+    
     
     
     
