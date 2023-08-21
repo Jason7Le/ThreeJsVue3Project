@@ -3,9 +3,11 @@
 // 引入three.js
 import * as THREE from 'three';
 import { FBXLoader } from 'three/addons/loaders/FBXLoader.js';
+import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
+import { MTLLoader } from 'three/addons/loaders/MTLLoader.js';
 // 引入轨道控制器扩展库OrbitControls.js
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import {addBottomGrid} from '../utils.js'
+import { addBottomGrid } from '../utils.js'
 import { onMounted, onUpdated, onBeforeUpdate, onBeforeMount } from 'vue';
 // 初始化3d画布以及场景
 let scene = new THREE.Scene()
@@ -63,6 +65,18 @@ loader.load('/static/PoleTowerModel/1.fbx', function (obj) {
     }
 )
 
+const objLoader = new OBJLoader()
+const mltLoader = new MTLLoader()
+mltLoader.load('/static/PoleTowerModel/inclinometer.mtl', function (materials) {
+    materials.preload()
+    objLoader.setMaterials(materials)
+    console.log('materials---', materials)
+    objLoader.load('/static/PoleTowerModel/inclinometer.obj', function (obj) {
+        obj.scale.set(1, 1, 1)
+        scene.add(obj)
+
+    })
+})
 
 
 // WebGL渲染器WebGLRenderer
